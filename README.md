@@ -6,8 +6,6 @@ The core idea is to explore interaction with a 3D environment using text-based c
 
 The particle system was inspired by the official Three.js `webgl_buffergeometry_drawrange` example ([view source](https://github.com/mrdoob/three.js/blob/master/examples/webgl_buffergeometry_drawrange.html)) which I previously adapted to a previous personal project ([baguinaga/nl-3d](https://github.com/baguinaga/3d-angular-portfolio)).
 
-[![Vercel Deployment](https://vercel.com/button)](nl-3d.vercel.app)
-
 ## Overview
 
 This application features a Three.js particle system that users can control via text commands. Natural language input is processed by a Transformers.js zero-shot classification pipeline to manipulate scene elements like particle count, colors, and background in real-time.
