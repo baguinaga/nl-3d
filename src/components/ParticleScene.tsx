@@ -76,7 +76,7 @@ export function ParticleScene({ lastProcessedCommand }: ParticleSceneProps) {
           console.log(`Setting particle count to ${parameters.value}`);
         } else if (parameters?.direction) {
           const changeAmount =
-            typeof parameters.delta === "number" ? parameters.delta : 500;
+            typeof parameters.delta === "number" ? parameters.delta : 300;
           setNumParticles((prev) => {
             const newCount =
               parameters.direction === "increase"
@@ -123,19 +123,17 @@ export function ParticleScene({ lastProcessedCommand }: ParticleSceneProps) {
   }, [lastProcessedCommand, scene]);
 
   useEffect(() => {
+    if (scene && !scene.background) {
+      scene.background = new THREE.Color(0xb3a89d);
+    }
+  }, [scene]);
+
+  useEffect(() => {
     console.log(
       `Re-initializing particle system with ${numParticles} particles.`
     );
     if (!scene) return;
-    scene.background = new THREE.Color(0xb3a89d);
     scene.rotation.z = 0.2;
-    if (
-      lastProcessedCommand?.action === "set_color" &&
-      lastProcessedCommand.parameters?.target === "background" &&
-      typeof lastProcessedCommand.parameters.value === "number"
-    ) {
-      scene.background = new THREE.Color(lastProcessedCommand.parameters.value);
-    }
 
     const particlesGeometry = new THREE.BufferGeometry();
     const particlePositions = new Float32Array(numParticles * 3);
@@ -227,7 +225,7 @@ export function ParticleScene({ lastProcessedCommand }: ParticleSceneProps) {
       colorsArray.current = null;
       particleData.current = [];
     };
-  }, [scene, numParticles, particleColor, lineColor, lastProcessedCommand]);
+  }, [scene, numParticles, particleColor, lineColor]);
 
   useFrame((state, delta) => {
     if (
@@ -273,11 +271,18 @@ export function ParticleScene({ lastProcessedCommand }: ParticleSceneProps) {
         const normalY = y / distanceFromCenter;
         const normalZ = z / distanceFromCenter;
         const velocity = particle.velocity;
+        const kick = 0.1;
+
         const dotProduct =
           velocity.x * normalX + velocity.y * normalY + velocity.z * normalZ;
         velocity.x -= 2 * dotProduct * normalX;
         velocity.y -= 2 * dotProduct * normalY;
         velocity.z -= 2 * dotProduct * normalZ;
+
+        velocity.x += (Math.random() - 0.5) * kick;
+        velocity.y += (Math.random() - 0.5) * kick;
+        velocity.z += (Math.random() - 0.5) * kick;
+
         const correctionFactor = sphereRadius / distanceFromCenter;
         currentParticlePositions[i * 3] *= correctionFactor;
         currentParticlePositions[i * 3 + 1] *= correctionFactor;
@@ -326,7 +331,6 @@ export function ParticleScene({ lastProcessedCommand }: ParticleSceneProps) {
               currentParticlePositions[j * 3 + 2];
 
             const alpha = 1.0 - dist / maxSegmentDistance;
-            // Use lineColor state for segments
             colorpos = setVertexColor(
               currentColors,
               colorpos,
