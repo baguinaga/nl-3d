@@ -2,6 +2,7 @@ import { renderHook, act } from "@testing-library/react";
 import { useCommandProcessor } from "./useCommandProcessor";
 import { parseColorAndValue } from "../utils/color";
 import { PARTICLE_LABELS } from "../constants/particleLabels";
+import { ClassifierFunc } from "@/lib/types/nlp";
 
 // Mock the color utility
 jest.mock("../utils/color", () => ({
@@ -13,8 +14,8 @@ const mockParseColorAndValue = parseColorAndValue as jest.MockedFunction<
 >;
 
 describe("useCommandProcessor", () => {
-  let mockClassifier: any;
-  let mockClassifierRef: React.RefObject<any>;
+  let mockClassifier: jest.MockedFunction<ClassifierFunc>;
+  let mockClassifierRef: React.RefObject<jest.MockedFunction<ClassifierFunc>>;
 
   beforeEach(() => {
     jest.clearAllMocks();

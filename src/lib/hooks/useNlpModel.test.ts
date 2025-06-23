@@ -1,14 +1,13 @@
 import { renderHook, waitFor } from "@testing-library/react";
 import { useNlpModel } from "./useNlpModel";
+import { pipeline, TextClassificationPipeline } from "@xenova/transformers";
+import { ClassifierFunc } from "@/lib/types/nlp";
 
 jest.mock("@xenova/transformers", () => ({
   pipeline: jest.fn(),
 }));
 
-const mockPipeline = require("@xenova/transformers")
-  .pipeline as jest.MockedFunction<
-  typeof import("@xenova/transformers").pipeline
->;
+const mockPipeline = pipeline as jest.MockedFunction<typeof pipeline>;
 
 describe("useNlpModel", () => {
   beforeEach(() => {
@@ -30,11 +29,15 @@ describe("useNlpModel", () => {
   });
 
   it("should successfully load the NLP model", async () => {
-    const mockClassifier = jest.fn().mockResolvedValue({
-      labels: ["test"],
-      scores: [0.9],
-    });
-    mockPipeline.mockResolvedValueOnce(mockClassifier as any);
+    const mockClassifier: jest.MockedFunction<ClassifierFunc> = jest
+      .fn()
+      .mockResolvedValue({
+        labels: ["test"],
+        scores: [0.9],
+      });
+    mockPipeline.mockResolvedValueOnce(
+      mockClassifier as unknown as TextClassificationPipeline
+    );
 
     const { result } = renderHook(() => useNlpModel());
 
@@ -86,11 +89,15 @@ describe("useNlpModel", () => {
   });
 
   it("should process a command correctly", async () => {
-    const mockClassifier = jest.fn().mockResolvedValue({
-      labels: ["LABEL_1"],
-      scores: [0.9],
-    });
-    mockPipeline.mockResolvedValue(mockClassifier as any);
+    const mockClassifier: jest.MockedFunction<ClassifierFunc> = jest
+      .fn()
+      .mockResolvedValue({
+        labels: ["LABEL_1"],
+        scores: [0.9],
+      });
+    mockPipeline.mockResolvedValue(
+      mockClassifier as unknown as TextClassificationPipeline
+    );
 
     const { result } = renderHook(() => useNlpModel());
 

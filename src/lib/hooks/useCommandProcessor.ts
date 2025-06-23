@@ -2,10 +2,10 @@ import { useState, useCallback } from "react";
 import { SceneCommand } from "@/lib/types/scene";
 import { parseColorAndValue } from "@/lib/utils/color";
 import { PARTICLE_LABELS } from "@/lib/constants/particleLabels";
+import { ClassifierFunc } from "@/lib/types/nlp";
 
 export interface UseCommandProcessorProps {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  classifier: React.RefObject<any>;
+  classifier: React.RefObject<ClassifierFunc | null>;
   isModelLoading: boolean;
 }
 
@@ -35,7 +35,7 @@ export function useCommandProcessor({
 
       if (classifier.current && !isModelLoading) {
         try {
-          const nlpOutput = await (classifier.current as any)(
+          const nlpOutput = await classifier.current(
             inputString,
             PARTICLE_LABELS,
             { multi_label: false }
