@@ -3,8 +3,11 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { Canvas } from "@react-three/fiber";
 import useMeasure from "react-use-measure";
-import { ParticleScene, SceneCommand } from "@/components/ParticleScene";
-import { InputControl } from "@/components/InputControl";
+import {
+  ParticleScene,
+  SceneCommand,
+} from "@/components/ParticleScene/ParticleScene";
+import { InputControl } from "@/components/InputControl/InputControl";
 import { OrbitControls } from "@react-three/drei";
 
 import { pipeline } from "@xenova/transformers";
