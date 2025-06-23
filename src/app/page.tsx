@@ -9,14 +9,8 @@ import {
 } from "@/components/ParticleScene/ParticleScene";
 import { InputControl } from "@/components/InputControl/InputControl";
 import { OrbitControls } from "@react-three/drei";
-
 import { pipeline } from "@xenova/transformers";
-import colorNameMap from "color-name";
-
-// Helper to convert RGB from color-name to hex number
-const rgbToHex = (rgb: [number, number, number]): number => {
-  return (rgb[0] << 16) + (rgb[1] << 8) + rgb[2];
-};
+import { parseColorAndValue } from "@/lib/utils/color";
 
 const CANDIDATE_LABELS = [
   "increase particle count",
@@ -62,48 +56,6 @@ export default function Home() {
   useEffect(() => {
     setHasMounted(true);
   }, []);
-
-  const parseColorAndValue = (
-    input: string,
-    actionTriggerPhrase: string
-  ): { colorHex?: number; value?: number } => {
-    const lowerInput = input.toLowerCase();
-    const phraseToSearch = actionTriggerPhrase.toLowerCase().trim();
-    const contentAfterPhrase = lowerInput.split(phraseToSearch)[1]?.trim();
-
-    if (contentAfterPhrase) {
-      const colorMap = colorNameMap as Record<string, [number, number, number]>;
-      if (colorMap[contentAfterPhrase]) {
-        return { colorHex: rgbToHex(colorMap[contentAfterPhrase]) };
-      }
-      const numericValue = parseInt(contentAfterPhrase, 10);
-      if (!isNaN(numericValue)) {
-        if (phraseToSearch.includes("color")) {
-          if (
-            /^0x[0-9a-fA-F]+$/.test(contentAfterPhrase) ||
-            (/^[0-9a-fA-F]{3,6}$/.test(contentAfterPhrase) &&
-              !contentAfterPhrase.startsWith("0x"))
-          ) {
-            const hexString = contentAfterPhrase.startsWith("0x")
-              ? contentAfterPhrase.substring(2)
-              : contentAfterPhrase;
-            const hexVal = parseInt(hexString, 16);
-            if (!isNaN(hexVal)) return { colorHex: hexVal };
-          } else {
-            console.warn(
-              `Could not parse "${contentAfterPhrase}" as a direct hex color for "${phraseToSearch}"`
-            );
-          }
-        } else {
-          return { value: numericValue };
-        }
-      }
-    }
-    console.warn(
-      `Could not parse value/color from "${input}" for action phrase "${actionTriggerPhrase}"`
-    );
-    return {};
-  };
 
   const handleProcessInput = useCallback(
     async (inputString: string) => {
