@@ -22,6 +22,15 @@ jest.mock("@react-three/drei", () => ({
 }));
 
 describe("Home Page", () => {
+  beforeEach(() => {
+    jest.spyOn(console, "log").mockImplementation(() => {});
+    jest.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it("renders the input control", async () => {
     render(<Home />);
 
