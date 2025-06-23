@@ -21,10 +21,6 @@ jest.mock("@react-three/drei", () => ({
   OrbitControls: jest.fn(() => null),
 }));
 
-jest.mock("color-name", () => ({
-  default: jest.fn(() => ({})),
-}));
-
 describe("Home Page", () => {
   it("renders the input control", async () => {
     render(<Home />);
