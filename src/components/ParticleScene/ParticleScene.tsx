@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useThree, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
+import { ParticleDataEntry, ParticleSceneProps } from "@/lib/types/scene";
 
 const diameter = 1000;
 const sphereRadius = diameter / 2;
@@ -11,21 +12,6 @@ const segmentColor = 0x444fff;
 
 const MAX_PARTICLES = 1800;
 const MAX_SEGMENTS = 10000;
-
-export interface SceneCommand {
-  action: string; // e.g., 'particles', 'segments', 'background', 'set_color'
-  parameters?: {
-    target?: "particles" | "segments" | "background";
-    value?: number | string;
-    delta?: number;
-    direction?: "increase" | "decrease";
-  };
-}
-
-interface ParticleDataEntry {
-  velocity: THREE.Vector3;
-  numConnections: number;
-}
 
 const setVertexColor = (
   colors: Float32Array,
@@ -39,10 +25,6 @@ const setVertexColor = (
   colors[index++] = c.b * alpha;
   return index;
 };
-
-interface ParticleSceneProps {
-  lastProcessedCommand: SceneCommand | null;
-}
 
 export function ParticleScene({ lastProcessedCommand }: ParticleSceneProps) {
   const { scene } = useThree();
@@ -225,7 +207,24 @@ export function ParticleScene({ lastProcessedCommand }: ParticleSceneProps) {
       colorsArray.current = null;
       particleData.current = [];
     };
-  }, [scene, numParticles, particleColor, lineColor]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scene, numParticles]);
+
+  useEffect(() => {
+    if (particlesMesh.current) {
+      (particlesMesh.current.material as THREE.PointsMaterial).color.setHex(
+        particleColor
+      );
+    }
+  }, [particleColor]);
+
+  useEffect(() => {
+    if (segmentsMesh.current) {
+      (segmentsMesh.current.material as THREE.LineBasicMaterial).color.setHex(
+        lineColor
+      );
+    }
+  }, [lineColor]);
 
   useFrame((state, delta) => {
     if (
@@ -362,16 +361,6 @@ export function ParticleScene({ lastProcessedCommand }: ParticleSceneProps) {
     }
     if (particlesMesh.current.geometry.attributes.position) {
       particlesMesh.current.geometry.attributes.position.needsUpdate = true;
-    }
-    if (
-      particlesMesh.current &&
-      (
-        particlesMesh.current.material as THREE.PointsMaterial
-      ).color.getHex() !== particleColor
-    ) {
-      (particlesMesh.current.material as THREE.PointsMaterial).color.setHex(
-        particleColor
-      );
     }
   });
 

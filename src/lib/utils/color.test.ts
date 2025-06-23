@@ -9,6 +9,14 @@ describe("rgbToInt", () => {
 });
 
 describe("parseColorAndValue", () => {
+  beforeEach(() => {
+    jest.spyOn(console, "warn").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it("parses named colors", () => {
     const res = parseColorAndValue(
       "set background color to red",
